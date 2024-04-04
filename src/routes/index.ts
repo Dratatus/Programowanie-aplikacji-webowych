@@ -1,4 +1,4 @@
-import  ProjectsList  from "../components/ProjectsList.vue"
+import  ProjectsList  from "../components/ProjectManager.vue"
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
