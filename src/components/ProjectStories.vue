@@ -76,7 +76,7 @@
                 </button>
               </div>
             </li>
-            <li v-if="stories.length === 0" class="text-center text-gray-500">No stories found.</li>
+            <li v-if="todoStories.length === 0" class="text-center text-gray-500">No stories found.</li>
           </ul>
         </div>
 
@@ -102,7 +102,7 @@
                 </button>
               </div>
             </li>
-            <li v-if="stories.length === 0" class="text-center text-gray-500">No stories found.</li>
+            <li v-if="doingStories.length === 0" class="text-center text-gray-500">No stories found.</li>
           </ul>
         </div>
 
@@ -128,7 +128,7 @@
                 </button>
               </div>
             </li>
-            <li v-if="stories.length === 0" class="text-center text-gray-500">No stories found.</li>
+            <li v-if="doneStories.length === 0" class="text-center text-gray-500">No stories found.</li>
           </ul>
         </div>
       </div>
