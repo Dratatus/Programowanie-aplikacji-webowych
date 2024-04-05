@@ -1,7 +1,7 @@
 export type Priority = 'low' | 'medium' | 'high';
 export type StoryState = 'todo' | 'doing' | 'done';
 
-export interface ProjectHistory {
+export interface ProjectStory {
     id: number;
     name: string;
     description: string;

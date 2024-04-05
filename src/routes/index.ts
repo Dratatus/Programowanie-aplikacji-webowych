@@ -1,8 +1,10 @@
-import  ProjectsList  from "../components/ProjectManager.vue"
+import  ProjectManager  from "../components/ProjectManager.vue"
 import { createRouter, createWebHistory } from 'vue-router'
+import ProjectStories from "../components/ProjectStories.vue";
 
 const routes = [
-  { path: '/', component: ProjectsList },
+  { path: '/', component: ProjectManager },
+  { path: '/stories', component: ProjectStories },
 ];
 
 const router = createRouter({

@@ -7,7 +7,6 @@
         <h2 class="text-2xl font-semibold mb-5">Add/Edit Project</h2>
         <form @submit.prevent="submitForm" class="space-y-4">
           <input type="hidden" v-model="editableProject.id">
-          
           <div>
             <label for="name" class="block text-gray-700 font-medium mb-1">Project Name:</label>
             <input v-model="editableProject.name" id="name" type="text" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"/>
@@ -38,6 +37,9 @@
       </div>
     </div>
   </div>
+
+ 
+ 
 </template>
 
 
