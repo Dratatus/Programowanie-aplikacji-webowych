@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 py-10">
-    <div class="container mx-auto max-w-4xl">
+    <div class="container mx-auto max-w-7xl">
       <h1 class="text-4xl font-bold text-center text-gray-800 mb-10">Project Stories</h1>
 
       <div class="flex justify-end mb-6">
@@ -9,6 +9,7 @@
           Add New Story
         </button>
       </div>
+
 
       <div v-if="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div class="bg-white p-8 rounded-lg">
@@ -52,38 +53,91 @@
           </form>
         </div>
       </div>
+      <div class="flex flex-row justify-between space-x-4">
+        <div class="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-semibold mb-4">ToDo Stories</h2>
+          <ul class="space-y-3">
+            <li v-for="story in todoStories" :key="story.id"
+              class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900">Name: {{ story.name }}</h3>
+                <p class="text-gray-600">Description: {{ story.description }}</p>
+                <p class="text-gray-600">Priority: {{ story.priority }}</p>
+                <p class="text-gray-600">Statte: {{ story.state }}</p>
+              </div>
+              <div>
+                <button @click="editStory(story)"
+                  class="text-sm bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg focus:outline-none mr-2">
+                  Edit
+                </button>
+                <button @click="deleteStory(story.id)"
+                  class="text-sm bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg focus:outline-none">
+                  Delete
+                </button>
+              </div>
+            </li>
+            <li v-if="stories.length === 0" class="text-center text-gray-500">No stories found.</li>
+          </ul>
+        </div>
 
-      <div class="bg-white p-8 rounded-lg shadow-md">
-        <h2 class="text-2xl font-semibold mb-5">Stories List</h2>
-        <ul class="space-y-3">
-          <li v-for="story in stories" :key="story.id"
-            class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900">Name: {{ story.name }}</h3>
-              <p class="text-gray-600">Description: {{ story.description }}</p>
-              <p class="text-gray-600">Priority: {{ story.priority }}</p>
-              <p class="text-gray-600">Statte: {{ story.state }}</p>
-            </div>
-            <div>
-              <button @click="editStory(story)"
-                class="text-sm bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg focus:outline-none mr-2">
-                Edit
-              </button>
-              <button @click="deleteStory(story.id)"
-                class="text-sm bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg focus:outline-none">
-                Delete
-              </button>
-            </div>
-          </li>
-          <li v-if="stories.length === 0" class="text-center text-gray-500">No stories found.</li>
-        </ul>
+        <div class="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-semibold mb-4">During Stories</h2>
+          <ul class="space-y-3">
+            <li v-for="story in doingStories" :key="story.id"
+              class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900">Name: {{ story.name }}</h3>
+                <p class="text-gray-600">Description: {{ story.description }}</p>
+                <p class="text-gray-600">Priority: {{ story.priority }}</p>
+                <p class="text-gray-600">Statte: {{ story.state }}</p>
+              </div>
+              <div>
+                <button @click="editStory(story)"
+                  class="text-sm bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg focus:outline-none mr-2">
+                  Edit
+                </button>
+                <button @click="deleteStory(story.id)"
+                  class="text-sm bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg focus:outline-none">
+                  Delete
+                </button>
+              </div>
+            </li>
+            <li v-if="stories.length === 0" class="text-center text-gray-500">No stories found.</li>
+          </ul>
+        </div>
+
+        <div class="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-semibold mb-4">Done Stories</h2>
+          <ul class="space-y-3">
+            <li v-for="story in doneStories" :key="story.id"
+              class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900">Name: {{ story.name }}</h3>
+                <p class="text-gray-600">Description: {{ story.description }}</p>
+                <p class="text-gray-600">Priority: {{ story.priority }}</p>
+                <p class="text-gray-600">Statte: {{ story.state }}</p>
+              </div>
+              <div>
+                <button @click="editStory(story)"
+                  class="text-sm bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg focus:outline-none mr-2">
+                  Edit
+                </button>
+                <button @click="deleteStory(story.id)"
+                  class="text-sm bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg focus:outline-none">
+                  Delete
+                </button>
+              </div>
+            </li>
+            <li v-if="stories.length === 0" class="text-center text-gray-500">No stories found.</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 </template>
   
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import CurrentProjectService from '../services/currentProject-service';
 import { ProjectStoryService } from '../services/projectStory-service';
 import { ProjectStory, Priority, StoryState } from '../models/projectStory';
@@ -95,14 +149,14 @@ const currentProjectId = ref<number | null>(null);
 const editableStory = ref<ProjectStory | null>(null);
 
 const newStory = ref({
-  id: Date.now(), 
+  id: Date.now(),
   name: '',
   description: '',
-  priority: '' as Priority, 
-  projectId: currentProjectId.value, 
-  creationDate: new Date(), 
-  state: '' as StoryState, 
-  ownerId: 1, 
+  priority: '' as Priority,
+  projectId: currentProjectId.value,
+  creationDate: new Date(),
+  state: '' as StoryState,
+  ownerId: 1,
 });
 
 onMounted(() => {
@@ -111,6 +165,19 @@ onMounted(() => {
     stories.value = ProjectStoryService.loadStoriesForProject(currentProjectId.value);
   }
 });
+
+const todoStories = computed(() =>
+  stories.value.filter((story) => story.state === 'todo')
+);
+
+const doingStories = computed(() =>
+  stories.value.filter((story) => story.state === 'doing')
+);
+
+const doneStories = computed(() =>
+  stories.value.filter((story) => story.state === 'done')
+);
+
 
 const toggleModal = (story: ProjectStory | null = null) => {
   if (story) {
@@ -139,18 +206,18 @@ const addStory = () => {
 
   const storyToAdd = {
     ...storyData,
-    projectId: projectId, 
-    priority: storyData.priority || 'medium', 
+    projectId: projectId,
+    priority: storyData.priority || 'medium',
     state: storyData.state || 'todo',
-    ownerId: 1, 
-    creationDate: new Date(), 
+    ownerId: 1,
+    creationDate: new Date(),
   };
 
   if (isEditing.value && editableStory.value && editableStory.value.id) {
     ProjectStoryService.updateStory({ ...editableStory.value, ...storyData, projectId: projectId });
   } else {
-  
-    storyToAdd.id = Date.now(); 
+
+    storyToAdd.id = Date.now();
     ProjectStoryService.createStory(storyToAdd);
   }
 

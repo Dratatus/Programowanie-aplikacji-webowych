@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch,  watchEffect } from 'vue';
 import CurrentProjectService from '../services/currentProject-service';
 import { ProjectService } from '../services/project-service';
 import { Project } from '../models/project';
@@ -31,7 +31,7 @@ const selectedProjectId = ref(null);
 const projects = ref<Project[]>([]);
 const selectedProjectName = ref('Select project');
 
-onMounted(async () => {
+watchEffect(async () => {
   projects.value = await ProjectService.loadProjects();
 });
 
