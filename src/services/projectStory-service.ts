@@ -2,12 +2,12 @@ import { ProjectStory, StoryState } from '../models/projectStory';
 
 export class ProjectStoryService {
   private static loadStories(): ProjectStory[] {
-    const stories = localStorage.getItem('projectHistories');
+    const stories = localStorage.getItem('projectStories');
     return stories ? JSON.parse(stories) : [];
   }
 
   private static saveStories(stories: ProjectStory[]): void {
-    localStorage.setItem('projectHistories', JSON.stringify(stories));
+    localStorage.setItem('projectStories', JSON.stringify(stories));
   }
 
   public static loadStoriesForProject(projectId: number): ProjectStory[] {

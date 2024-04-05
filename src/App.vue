@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import SelectCurrentProject from './components/SelectCurrentProject.vue';
 
 </script>
 
@@ -30,10 +29,6 @@ import SelectCurrentProject from './components/SelectCurrentProject.vue';
       <div class="py-6 lg:px-8 flex items-start">
         <div class="flex-1">
           <router-view />
-        </div>
-
-        <div class="px-12">
-          <SelectCurrentProject />
         </div>
       </div>
     </main>

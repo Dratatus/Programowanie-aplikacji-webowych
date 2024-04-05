@@ -3,6 +3,8 @@
     <div class="container mx-auto max-w-7xl">
       <h1 class="text-4xl font-bold text-center text-gray-800 mb-10">Project Stories</h1>
 
+      <SelectCurrentProject />
+
       <div class="flex justify-end mb-6">
         <button @click="toggleModal()"
           class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
@@ -137,15 +139,17 @@
 </template>
   
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import CurrentProjectService from '../services/currentProject-service';
 import { ProjectStoryService } from '../services/projectStory-service';
 import { ProjectStory, Priority, StoryState } from '../models/projectStory';
+import { selectedProjectId } from '../reactive/refs';
+import SelectCurrentProject from '../components/SelectCurrentProject.vue';
+
 
 const stories = ref<ProjectStory[]>([]);
 const isModalOpen = ref(false);
 const isEditing = ref(false);
-const currentProjectId = ref<number | null>(null);
 const editableStory = ref<ProjectStory | null>(null);
 
 const newStory = ref({
@@ -153,16 +157,16 @@ const newStory = ref({
   name: '',
   description: '',
   priority: '' as Priority,
-  projectId: currentProjectId.value,
+  projectId: selectedProjectId.value,
   creationDate: new Date(),
   state: '' as StoryState,
   ownerId: 1,
 });
 
 onMounted(() => {
-  currentProjectId.value = CurrentProjectService.getCurrentProject();
-  if (currentProjectId.value) {
-    stories.value = ProjectStoryService.loadStoriesForProject(currentProjectId.value);
+  selectedProjectId.value = CurrentProjectService.getCurrentProject();
+  if (selectedProjectId.value) {
+    stories.value = ProjectStoryService.loadStoriesForProject(selectedProjectId.value);
   }
 });
 
@@ -178,6 +182,14 @@ const doneStories = computed(() =>
   stories.value.filter((story) => story.state === 'done')
 );
 
+watch(selectedProjectId, (newId) => {
+  if (newId) {
+    stories.value = ProjectStoryService.loadStoriesForProject(newId);
+  } else {
+    stories.value = [];
+  }
+});
+
 
 const toggleModal = (story: ProjectStory | null = null) => {
   if (story) {
@@ -191,12 +203,12 @@ const toggleModal = (story: ProjectStory | null = null) => {
 };
 
 const addStory = () => {
-  if (!currentProjectId.value) {
+  if (!selectedProjectId.value) {
     alert("Please select a project first.");
     return;
   }
 
-  const projectId = currentProjectId.value!;
+  const projectId = selectedProjectId.value!;
   const storyData = newStory.value;
 
   if (!storyData.name || !storyData.description) {
