@@ -18,7 +18,7 @@ class CurrentProjectService {
     localStorage.setItem('currentProject', projectId.toString());
   }
 
-  public getCurrentProject(): number | null {
+  public getCurrentProjectId(): number | null {
     return this.currentProjectId;
   }
 

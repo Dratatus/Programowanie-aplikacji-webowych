@@ -164,7 +164,7 @@ const newStory = ref({
 });
 
 onMounted(() => {
-  selectedProjectId.value = CurrentProjectService.getCurrentProject();
+  selectedProjectId.value = CurrentProjectService.getCurrentProjectId();
   if (selectedProjectId.value) {
     stories.value = ProjectStoryService.loadStoriesForProject(selectedProjectId.value);
   }

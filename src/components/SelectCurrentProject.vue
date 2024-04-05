@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, watchEffect, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import CurrentProjectService from '../services/currentProject-service';
 import { ProjectService } from '../services/project-service';
 import { Project } from '../models/project';
@@ -35,7 +35,7 @@ import { selectedProjectId } from '../reactive/refs';
 const projects = ref<Project[]>([]);
 const selectedProjectName = ref('Select project');
 
-const loadProjects = async () => {
+const refreshProjects = async () => {
     projects.value = await ProjectService.loadProjects();
     if (selectedProjectId.value) {
         const project = projects.value.find(p => p.id === selectedProjectId.value);
@@ -48,13 +48,8 @@ onMounted(() => {
     if (savedProjectId) {
         selectedProjectId.value = Number(savedProjectId);
     }
-    loadProjects();
+    refreshProjects();
 });
-
-watchEffect(async () => {
-    await loadProjects();
-});
-
 
 watch(selectedProjectId, (newVal) => {
     if (newVal) {
@@ -69,5 +64,6 @@ const setCurrentProject = () => {
     if (selectedProjectId.value) {
         CurrentProjectService.setCurrentProject(selectedProjectId.value);
     }
+    refreshProjects();
 };
 </script>
