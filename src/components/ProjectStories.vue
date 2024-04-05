@@ -161,7 +161,9 @@ const addStory = () => {
 
 
 const editStory = (story: ProjectStory) => {
-  toggleModal(story);
+  newStory.value = { ...story };
+  isEditing.value = true;
+  toggleModal();
 };
 
 const deleteStory = (storyId: number) => {
