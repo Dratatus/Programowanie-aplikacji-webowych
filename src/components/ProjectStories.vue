@@ -16,7 +16,7 @@
       <div v-if="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div class="bg-white p-8 rounded-lg">
           <h3 class="text-xl font-bold mb-4">Add New Story</h3>
-          <form @submit.prevent="addStory">
+          <form @submit.prevent="isEditing ? updateStory() : addStory()">
             <div class="mb-4">
               <label for="story-name" class="block text-sm font-medium text-gray-700">Story Name</label>
               <input type="text" id="story-name" v-model="newStory.name"
@@ -225,24 +225,29 @@ const addStory = () => {
     creationDate: new Date(),
   };
 
-  if (isEditing.value && editableStory.value && editableStory.value.id) {
-    ProjectStoryService.updateStory({ ...editableStory.value, ...storyData, projectId: projectId });
-  } else {
-
-    storyToAdd.id = Date.now();
-    ProjectStoryService.createStory(storyToAdd);
-  }
+  storyToAdd.id = Date.now();
+  ProjectStoryService.createStory(storyToAdd);
 
   stories.value = ProjectStoryService.loadStoriesForProject(projectId);
   toggleModal();
 };
 
 
+const updateStory = () => {
+  const projectId = selectedProjectId.value!;
+  const storyData = newStory.value;
 
+  if (isEditing.value && editableStory.value && editableStory.value.id) {
+    ProjectStoryService.updateStory({ ...editableStory.value, ...storyData, projectId: projectId });
+  }
+
+  stories.value = ProjectStoryService.loadStoriesForProject(projectId);
+  toggleModal()
+}
 const editStory = (story: ProjectStory) => {
   newStory.value = { ...story };
   isEditing.value = true;
-  toggleModal();
+  toggleModal(newStory.value as ProjectStory);
 };
 
 const deleteStory = (storyId: number) => {
