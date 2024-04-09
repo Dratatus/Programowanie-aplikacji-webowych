@@ -152,12 +152,12 @@ const isModalOpen = ref(false);
 const isEditing = ref(false);
 const editableStory = ref<ProjectStory | null>(null);
 
-const newStory = ref({
+const newStory = ref<ProjectStory>({
   id: Date.now(),
   name: '',
   description: '',
   priority: '' as Priority,
-  projectId: selectedProjectId.value,
+  projectId: selectedProjectId.value as number,
   creationDate: new Date(),
   state: '' as StoryState,
   ownerId: 1,
@@ -218,6 +218,7 @@ const addStory = () => {
 
   const storyToAdd = {
     ...storyData,
+    id: Date.now(),
     projectId: projectId,
     priority: storyData.priority || 'medium',
     state: storyData.state || 'todo',
@@ -225,7 +226,6 @@ const addStory = () => {
     creationDate: new Date(),
   };
 
-  storyToAdd.id = Date.now();
   ProjectStoryService.createStory(storyToAdd);
 
   stories.value = ProjectStoryService.loadStoriesForProject(projectId);
@@ -234,25 +234,30 @@ const addStory = () => {
 
 
 const updateStory = () => {
+
   const projectId = selectedProjectId.value!;
   const storyData = newStory.value;
 
   if (isEditing.value && editableStory.value && editableStory.value.id) {
     ProjectStoryService.updateStory({ ...editableStory.value, ...storyData, projectId: projectId });
   }
+  else {
+    alert("Something went wrong with story update")
+  }
 
   stories.value = ProjectStoryService.loadStoriesForProject(projectId);
   toggleModal()
 }
+
 const editStory = (story: ProjectStory) => {
   newStory.value = { ...story };
   isEditing.value = true;
-  toggleModal(newStory.value as ProjectStory);
+  toggleModal(newStory.value);
 };
 
 const deleteStory = (storyId: number) => {
   ProjectStoryService.deleteStory(storyId);
-  stories.value = stories.value.filter(story => story.id !== storyId);
+  stories.value = ProjectStoryService.loadStoriesForProject(selectedProjectId.value as number);
 };
 </script>
 
