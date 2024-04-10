@@ -4,6 +4,7 @@
             <h1 class="text-4xl font-bold text-center text-gray-800 mb-10">Project Tasks</h1>
 
             <SelectCurrentProject />
+            <SelectCurrentStory />
 
             <div class="flex justify-end mb-6">
                 <button @click="toggleModal"
@@ -72,7 +73,7 @@
                         <h4 class="text-lg font-semibold">Name: {{ detailedTask.name }}</h4>
                         <p>Description: {{ detailedTask.description }}</p>
                         <p>Priority: {{ detailedTask.priority }}</p>
-                        <p>Assigned to: {{ detailedTask.assignedUserId }}</p>
+                        <p v-if="detailedTask.assignedUserId " >Assigned to: {{ detailedTask.assignedUserId }} </p>
                         <p>Estimated Hours: {{ detailedTask.estimatedTime }}</p>
                     </div>
                     <button @click="detailedTask = undefined"
@@ -175,6 +176,7 @@ import { ref, onMounted, computed } from 'vue';
 import SelectCurrentProject from './SelectCurrentProject.vue';
 import { Task } from '../models/Task';
 import { ProjectTaskService } from '../services/projectTask-service';
+import SelectCurrentStory from './SelectCurrentStory.vue';
 
 const isModalOpen = ref(false);
 const isEditing = ref(false);

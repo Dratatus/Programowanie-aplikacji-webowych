@@ -1,7 +1,7 @@
 import { ProjectStory, StoryState } from '../models/projectStory';
 
 export class ProjectStoryService {
-  private static loadStories(): ProjectStory[] {
+   static loadStories(): ProjectStory[] {
     const stories = localStorage.getItem('projectStories');
     return stories ? JSON.parse(stories) : [];
   }

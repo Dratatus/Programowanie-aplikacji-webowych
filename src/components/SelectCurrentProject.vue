@@ -51,7 +51,7 @@ onMounted(() => {
     refreshProjects();
 });
 
-watch(selectedProjectId, (newVal) => {
+watch(selectedProjectId,  (newVal) => {
     if (newVal) {
         localStorage.setItem('selectedProjectId', newVal.toString());
         CurrentProjectService.setCurrentProject(newVal);
