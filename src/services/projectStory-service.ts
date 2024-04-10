@@ -13,9 +13,6 @@ export class ProjectStoryService {
   public static loadStoriesForProject(projectId: number): ProjectStory[] {
     return this.loadStories().filter(story => story.projectId === projectId);
   }
-  public static GetStories(): ProjectStory[] {
-    return this.loadStories();
-  }
 
   public static createStory(story: ProjectStory): void {
     const stories = this.loadStories();

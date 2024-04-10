@@ -55,6 +55,7 @@
           </form>
         </div>
       </div>
+      
       <div class="flex flex-row justify-between space-x-4">
         <div class="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
           <h2 class="text-2xl font-semibold mb-4">ToDo Stories</h2>
@@ -118,6 +119,7 @@
                 <p class="text-gray-600">Description: {{ story.description }}</p>
                 <p class="text-gray-600">Priority: {{ story.priority }}</p>
                 <p class="text-gray-600">Statte: {{ story.state }}</p>
+                <p class="text-gray-600">Created: {{ story.creationDate }}</p>
               </div>
               <div>
                 <button @click="editStory(story)"
@@ -145,6 +147,7 @@ import { ProjectStoryService } from '../services/projectStory-service';
 import { ProjectStory, Priority, StoryState } from '../models/projectStory';
 import { selectedProjectId } from '../reactive/refs';
 import SelectCurrentProject from '../components/SelectCurrentProject.vue';
+
 
 
 const stories = ref<ProjectStory[]>([]);
