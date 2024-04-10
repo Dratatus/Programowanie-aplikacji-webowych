@@ -87,7 +87,6 @@
                             class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">{{ task.name }}</h3>
-                                <p class="text-gray-600">Description: {{ task.description }}</p>
                                 <p class="text-gray-600">Priority: {{ task.priority }}</p>
                                 <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ task.assignedUserId }}
                                 </p>
@@ -118,17 +117,21 @@
                             class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">{{ task.name }}</h3>
-                                <p class="text-gray-600">Description: {{ task.description }}</p>
                                 <p class="text-gray-600">Priority: {{ task.priority }}</p>
                                 <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ task.assignedUserId }}
                                 </p>
                                 <p class="text-gray-600">Estimated Hours: {{ task.estimatedTime }}</p>
                             </div>
-                            <div class="flex items-center">
-                                <button @click="editTask(task)"
-                                    class="text-sm bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg focus:outline-none mr-2">Edit</button>
-                                <button @click="deleteTask(task.id)"
-                                    class="text-sm bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg focus:outline-none">Delete</button>
+                            <div class="flex flex-col items-center justify-between">
+                                <div class="flex mb-2">
+                                    <button @click="editTask(task)"
+                                        class="text-sm bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg focus:outline-none mr-2">Edit</button>
+                                    <button @click="deleteTask(task.id)"
+                                        class="text-sm bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg focus:outline-none">Delete</button>
+                                </div>
+                                <button @click="showDetails(task)"
+                                    class="text-sm bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg focus:outline-none">See
+                                    details</button>
                             </div>
                         </li>
                         <li v-if="doingTasks.length === 0" class="text-center text-gray-500">No tasks found.</li>
@@ -142,17 +145,21 @@
                             class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">{{ task.name }}</h3>
-                                <p class="text-gray-600">Description: {{ task.description }}</p>
                                 <p class="text-gray-600">Priority: {{ task.priority }}</p>
                                 <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ task.assignedUserId }}
                                 </p>
                                 <p class="text-gray-600">Estimated Hours: {{ task.estimatedTime }}</p>
                             </div>
-                            <div class="flex items-center">
-                                <button @click="editTask(task)"
-                                    class="text-sm bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg focus:outline-none mr-2">Edit</button>
-                                <button @click="deleteTask(task.id)"
-                                    class="text-sm bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg focus:outline-none">Delete</button>
+                            <div class="flex flex-col items-center justify-between">
+                                <div class="flex mb-2">
+                                    <button @click="editTask(task)"
+                                        class="text-sm bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg focus:outline-none mr-2">Edit</button>
+                                    <button @click="deleteTask(task.id)"
+                                        class="text-sm bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg focus:outline-none">Delete</button>
+                                </div>
+                                <button @click="showDetails(task)"
+                                    class="text-sm bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg focus:outline-none">See
+                                    details</button>
                             </div>
                         </li>
                         <li v-if="doneTasks.length === 0" class="text-center text-gray-500">No tasks found.</li>
