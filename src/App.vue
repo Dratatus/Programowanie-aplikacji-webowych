@@ -6,7 +6,7 @@
   <div class="flex flex-col min-h-screen bg-gray-100">
     <!-- Navbar -->
     <nav class="bg-gray-800">
-      <div class="max-w-7xl px-2 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         <div class="relative flex items-center justify-between h-16">
           <!-- Logo and navigation -->
           <div class="flex-1 flex items-center justify-start sm:items-stretch sm:justify-start">
@@ -22,6 +22,12 @@
               </div>
             </div>
           </div>
+
+          <div class="hidden sm:block">
+            <div class="flex items-center">
+              <router-link to="/Login" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</router-link>
+            </div>
+          </div>
         </div>
       </div>
     </nav>
@@ -35,13 +41,3 @@
     </main>
   </div>
 </template>
-
-
-<style scoped>
-html,
-body {
-  height: 100%;
-  background-color: #f3f4f6;
-}
-
-</style>
