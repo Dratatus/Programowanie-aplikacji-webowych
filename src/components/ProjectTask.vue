@@ -51,10 +51,10 @@
                             </div>
                             <div>
                                 <label for="assigned-user" class="block text-sm font-medium text-gray-700">Assigned User</label>
-                                <select id="assigned-user" v-model="newTask.assignedUserId" required
+                                <select id="assigned-user" v-model="newTask.assignedUserId"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                     <option value="" disabled>Select user</option>
-                                    <option v-for="user in users" :key="user.id" :value="user.id">
+                                    <option v-for="user in filteredUsers" :key="user.id" :value="user.id">
                                         {{ user.firstName }} {{ user.lastName }}
                                     </option>
                                 </select>
@@ -155,9 +155,9 @@
                                 <h3 class="text-lg font-semibold text-gray-900">{{ task.name }}</h3>
                                 <p class="text-gray-600">Priority: {{ task.priority }}</p>
                                 <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ getUserName(task.assignedUserId) }}</p>
+                                <p class="text-gray-600">Estimated Hours: {{ task.estimatedTime }}</p>
                                 <p v-if="task.startDate">Start Date: {{ formatDate(task.startDate) }}</p>
                                 <p v-if="task.endDate">End Date: {{ formatDate(task.endDate) }}</p>
-                                <p class="text-gray-600">Estimated Hours: {{ task.estimatedTime }}</p>
                             </div>
                             <div class="flex flex-col items-center justify-between">
                                 <div class="flex mb-2">
@@ -221,6 +221,10 @@ const doneTasks = computed(() =>
     tasks.value.filter((task) => task.status === "Done")
 );
 
+const filteredUsers = computed(() =>
+    users.value.filter((user) => user.role === 'Developer' || user.role === 'DevOps')
+);
+
 const toggleModal = () => {
     isModalOpen.value = !isModalOpen.value;
     if (!isModalOpen.value) {
@@ -275,7 +279,11 @@ const getUserName = (userId: number) => {
     return user ? `${user.firstName} ${user.lastName}` : 'Unknown';
 };
 
-const formatDate = (dateString: Date) => {
-    return format(new Date(dateString), 'yyyy-MM-dd');
+const formatDate = (date: string | Date) => {
+    if (typeof date === 'string') {
+        return format(new Date(date), 'yyyy-MM-dd');
+    } else {
+        return format(date, 'yyyy-MM-dd');
+    }
 };
 </script>
