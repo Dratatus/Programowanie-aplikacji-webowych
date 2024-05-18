@@ -279,7 +279,7 @@ const getUserName = (userId: number) => {
     return user ? `${user.firstName} ${user.lastName}` : 'Unknown';
 };
 
-const formatDate = (date: string | Date) => {
+const formatDate = (date: Date) => {
     if (typeof date === 'string') {
         return format(new Date(date), 'yyyy-MM-dd');
     } else {
