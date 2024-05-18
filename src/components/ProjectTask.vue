@@ -25,8 +25,7 @@
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                             </div>
                             <div>
-                                <label for="task-description"
-                                    class="block text-sm font-medium text-gray-700">Description</label>
+                                <label for="task-description" class="block text-sm font-medium text-gray-700">Description</label>
                                 <textarea id="task-description" v-model="newTask.description" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
                             </div>
@@ -50,7 +49,16 @@
                                     <option value="Done">Done</option>
                                 </select>
                             </div>
-                            <!-- Add other fields as necessary -->
+                            <div>
+                                <label for="assigned-user" class="block text-sm font-medium text-gray-700">Assigned User</label>
+                                <select id="assigned-user" v-model="newTask.assignedUserId" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="" disabled>Select user</option>
+                                    <option v-for="user in users" :key="user.id" :value="user.id">
+                                        {{ user.firstName }} {{ user.lastName }}
+                                    </option>
+                                </select>
+                            </div>
                         </div>
                         <!-- Form actions -->
                         <div class="mt-6 flex justify-end">
@@ -73,8 +81,10 @@
                         <h4 class="text-lg font-semibold">Name: {{ detailedTask.name }}</h4>
                         <p>Description: {{ detailedTask.description }}</p>
                         <p>Priority: {{ detailedTask.priority }}</p>
-                        <p v-if="detailedTask.assignedUserId " >Assigned to: {{ detailedTask.assignedUserId }} </p>
+                        <p v-if="detailedTask.assignedUserId">Assigned to: {{ getUserName(detailedTask.assignedUserId) }}</p>
                         <p>Estimated Hours: {{ detailedTask.estimatedTime }}</p>
+                        <p v-if="detailedTask.startDate">Start Date: {{ formatDate(detailedTask.startDate) }}</p>
+                        <p v-if="detailedTask.endDate">End Date: {{ formatDate(detailedTask.endDate) }}</p>
                     </div>
                     <button @click="detailedTask = undefined"
                         class="mt-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Close</button>
@@ -89,8 +99,7 @@
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">{{ task.name }}</h3>
                                 <p class="text-gray-600">Priority: {{ task.priority }}</p>
-                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ task.assignedUserId }}
-                                </p>
+                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ getUserName(task.assignedUserId) }}</p>
                                 <p class="text-gray-600">Estimated Hours: {{ task.estimatedTime }}</p>
                             </div>
                             <div class="flex flex-col items-center justify-between">
@@ -104,8 +113,6 @@
                                     class="text-sm bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg focus:outline-none">See
                                     details</button>
                             </div>
-
-
                         </li>
                         <li v-if="todoTasks.length === 0" class="text-center text-gray-500">No tasks found.</li>
                     </ul>
@@ -119,9 +126,9 @@
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">{{ task.name }}</h3>
                                 <p class="text-gray-600">Priority: {{ task.priority }}</p>
-                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ task.assignedUserId }}
-                                </p>
+                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ getUserName(task.assignedUserId) }}</p>
                                 <p class="text-gray-600">Estimated Hours: {{ task.estimatedTime }}</p>
+                                <p v-if="task.startDate">Start Date: {{ formatDate(task.startDate) }}</p>
                             </div>
                             <div class="flex flex-col items-center justify-between">
                                 <div class="flex mb-2">
@@ -147,8 +154,9 @@
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">{{ task.name }}</h3>
                                 <p class="text-gray-600">Priority: {{ task.priority }}</p>
-                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ task.assignedUserId }}
-                                </p>
+                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ getUserName(task.assignedUserId) }}</p>
+                                <p v-if="task.startDate">Start Date: {{ formatDate(task.startDate) }}</p>
+                                <p v-if="task.endDate">End Date: {{ formatDate(task.endDate) }}</p>
                                 <p class="text-gray-600">Estimated Hours: {{ task.estimatedTime }}</p>
                             </div>
                             <div class="flex flex-col items-center justify-between">
@@ -173,15 +181,18 @@
   
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
+import { format } from 'date-fns';
 import SelectCurrentProject from './SelectCurrentProject.vue';
+import SelectCurrentStory from './SelectCurrentStory.vue';
 import { Task } from '../models/Task';
 import { ProjectTaskService } from '../services/projectTask-service';
-import SelectCurrentStory from './SelectCurrentStory.vue';
 import { selectedStoryId, tasks } from '../reactive/refs';
+import AuthService from '../services/auth-service'; // Import AuthService
 
 const isModalOpen = ref(false);
 const isEditing = ref(false);
 const detailedTask = ref<Task>();
+const users = ref(AuthService.getUsers()); // Get users from AuthService
 const newTask = ref<Task>({
     id: Date.now(), 
     name: '',
@@ -191,6 +202,7 @@ const newTask = ref<Task>({
     estimatedTime: 0,
     status: 'Todo',
     creationDate: new Date(),
+    assignedUserId: undefined,
 });
 
 onMounted(() => {
@@ -253,7 +265,17 @@ const resetForm = () => {
         estimatedTime: 0,
         status: 'Todo',
         creationDate: new Date(),
+        assignedUserId: undefined,
     };
     isEditing.value = false;
+};
+
+const getUserName = (userId: number) => {
+    const user = users.value.find(user => user.id === userId);
+    return user ? `${user.firstName} ${user.lastName}` : 'Unknown';
+};
+
+const formatDate = (dateString: Date) => {
+    return format(new Date(dateString), 'yyyy-MM-dd');
 };
 </script>
