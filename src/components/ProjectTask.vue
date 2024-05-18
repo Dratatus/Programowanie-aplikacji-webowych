@@ -5,7 +5,7 @@
 
             <SelectCurrentProject />
             <SelectCurrentStory />
-
+            
             <div class="flex justify-end mb-6">
                 <button @click="toggleModal"
                     class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
@@ -140,7 +140,7 @@
                 </div>
 
                 <div class="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-semibold mb-4">Doing Tasks</h2>
+                    <h2 class="text-2xl font-semibold mb-4">Done Tasks</h2>
                     <ul class="space-y-3">
                         <li v-for="task in doneTasks" :key="task.id"
                             class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
@@ -177,11 +177,11 @@ import SelectCurrentProject from './SelectCurrentProject.vue';
 import { Task } from '../models/Task';
 import { ProjectTaskService } from '../services/projectTask-service';
 import SelectCurrentStory from './SelectCurrentStory.vue';
+import { selectedStoryId, tasks } from '../reactive/refs';
 
 const isModalOpen = ref(false);
 const isEditing = ref(false);
 const detailedTask = ref<Task>();
-const tasks = ref<Task[]>([]);
 const newTask = ref<Task>({
     id: Date.now(), 
     name: '',
@@ -194,7 +194,7 @@ const newTask = ref<Task>({
 });
 
 onMounted(() => {
-    tasks.value = ProjectTaskService.loadTasks();
+    tasks.value = ProjectTaskService.getTasksByStory(selectedStoryId.value as number)
 });
 
 const todoTasks = computed(() =>
@@ -222,13 +222,13 @@ const showDetails = (task: Task) => {
 
 const addTask = () => {
     ProjectTaskService.addTask(newTask.value);
-    tasks.value = ProjectTaskService.loadTasks(); 
+    tasks.value = ProjectTaskService.getTasksByStory(selectedStoryId.value as number); 
     toggleModal();
 };
 
 const updateTask = () => {
     ProjectTaskService.updateTask(newTask.value);
-    tasks.value = ProjectTaskService.loadTasks(); 
+    tasks.value = ProjectTaskService.getTasksByStory(selectedStoryId.value as number); 
     toggleModal();
 };
 
@@ -240,7 +240,7 @@ const editTask = (task: Task) => {
 
 const deleteTask = (taskId: number) => {
     ProjectTaskService.deleteTask(taskId);
-    tasks.value = ProjectTaskService.loadTasks();
+    tasks.value = ProjectTaskService.getTasksByStory(selectedStoryId.value as number);
 };
 
 const resetForm = () => {

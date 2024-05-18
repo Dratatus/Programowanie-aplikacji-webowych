@@ -27,19 +27,20 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import CurrentProjectService from '../services/currentProject-service';
-import CurrentStoryService from '../services/currentStory-service'; 
+import CurrentStoryService from '../services/currentStory-service';
 import { ProjectService } from '../services/project-service';
 import { Project } from '../models/project';
-import { selectedProjectId } from '../reactive/refs';
-import { selectedStoryId } from '../reactive/refs'; 
+import { selectedProjectId, tasks } from '../reactive/refs';
+import { selectedStoryId } from '../reactive/refs';
 import { ProjectStory } from '../models/projectStory';
 import { ProjectStoryService } from '../services/projectStory-service';
+import { ProjectTaskService } from '../services/projectTask-service';
 
 const projects = ref<Project[]>([]);
-const stories = ref<ProjectStory[]>([]); 
+const stories = ref<ProjectStory[]>([]);
+
 const selectedProjectName = ref('Select project');
 const selectedStoryName = ref('Select story');
-
 
 const refreshProjectsAndStories = async () => {
     projects.value = await ProjectService.loadProjects();
@@ -50,15 +51,20 @@ const refreshProjectsAndStories = async () => {
         const story = stories.value.find(s => s.id === selectedStoryId.value);
 
         selectedProjectName.value = project ? project.name : 'Select project';
-        selectedStoryName.value = story?.name as string 
-        
+        selectedStoryName.value = story ? story.name : 'Select story';
+
         stories.value = await ProjectStoryService.loadStoriesForProject(selectedProjectId.value);
+        await refreshTasks(selectedStoryId.value as number);
     }
+};
+
+const refreshTasks = async (storyId: number) => {
+    tasks.value = await ProjectTaskService.getTasksByStory(storyId);
 };
 
 onMounted(() => {
     const savedProjectId = localStorage.getItem('selectedProjectId');
-    const savedStoryId = localStorage.getItem('selectedStoryId'); 
+    const savedStoryId = localStorage.getItem('selectedStoryId');
     if (savedProjectId) {
         selectedProjectId.value = Number(savedProjectId);
     }
@@ -84,23 +90,24 @@ watch(selectedStoryId, (newVal) => {
         CurrentStoryService.setCurrentStory(newVal);
         const story = stories.value.find(s => s.id === newVal);
         selectedStoryName.value = story ? story.name : 'Select story';
+        refreshTasks(newVal);
     } else {
         selectedStoryName.value = 'Select story';
+        tasks.value = [];
     }
 });
 
-const setCurrentStory = () => {
+const setCurrentStory = async () => {
     if (selectedStoryId.value) {
         CurrentStoryService.setCurrentStory(selectedStoryId.value);
         const story = stories.value.find(s => s.id === selectedStoryId.value);
         selectedStoryName.value = story ? story.name : 'Select story';
-        // Jeśli masz zamiar odświeżyć inne dane po zmianie historii, tutaj dodaj logikę
+        await refreshTasks(selectedStoryId.value);
     } else {
         selectedStoryName.value = 'Select story';
-        // Upewnij się, że przy braku wyboru czyszczona jest odpowiednia wartość w localStorage
         localStorage.removeItem('selectedStoryId');
         CurrentStoryService.clearCurrentStory();
+        tasks.value = [];
     }
 };
 </script>
-

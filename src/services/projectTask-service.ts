@@ -1,4 +1,5 @@
 import { Task } from "../models/Task";
+import { selectedStoryId } from "../reactive/refs";
 
 
 export class ProjectTaskService {
@@ -14,6 +15,7 @@ export class ProjectTaskService {
     static addTask(task: Task): void {
         const tasks = this.loadTasks();
         task.id = new Date().getTime(); 
+        task.storyId = selectedStoryId.value as number
         task.creationDate = new Date();
         tasks.push(task);
         this.saveTasks(tasks);
