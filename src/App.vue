@@ -25,7 +25,7 @@
 
           <div class="hidden sm:block">
             <div class="flex items-center">
-              <router-link to="/Login" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</router-link>
+              <router-link to="/login" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</router-link>
             </div>
           </div>
         </div>
