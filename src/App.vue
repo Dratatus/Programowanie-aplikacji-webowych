@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { loggedUser } from './reactive/refs';
+import GoogleAuthService from './services/auth/google-auth-service';
 
 const user = computed(() => loggedUser.value);
+const logout = () => {
+  GoogleAuthService.logout();
+};
+
 </script>
 
 <style scoped></style>
@@ -42,6 +47,7 @@ const user = computed(() => loggedUser.value);
               <template v-if="user">
                 <img :src="user.avatar" alt="User Avatar" class="h-8 w-8 rounded-full">
               <span class="text-gray-300 px-3 py-2 rounded-md text-sm font-medium">{{ user.name }}</span>
+              <button @click="logout" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Logout</button>
               </template>
             </div>
           </div>

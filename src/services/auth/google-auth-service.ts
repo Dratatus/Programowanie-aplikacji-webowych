@@ -1,8 +1,6 @@
-import axios from 'axios';
 import { loggedUser } from '../../reactive/refs';
 import { LoggedUser } from '../../models/User/loggedUser';
-import { jwtDecode } from 'jwt-decode';
-
+import { jwtDecode } from 'jwt-decode'; 
 
 class GoogleAuthService {
   private static instance: GoogleAuthService;
@@ -26,12 +24,16 @@ class GoogleAuthService {
     const token = params.get('token');
     const refreshToken = params.get('refreshToken');
     const googleToken = params.get('googleToken');
-  
+
     if (token && refreshToken && googleToken) {
       localStorage.setItem('token', token);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('googleToken', googleToken);
-      loggedUser.value = this.decodeToken(token);
+      const user = this.decodeToken(token);
+      if (user) {
+        loggedUser.value = user;
+        localStorage.setItem('loggedUser', JSON.stringify(user));
+      }
       console.log(loggedUser.value)
     } else {
       throw new Error('Google authentication failed');
@@ -41,10 +43,9 @@ class GoogleAuthService {
   private decodeToken(token: string): LoggedUser | null {
     try {
       const decoded: any = jwtDecode(token);
-      console.log(decoded.name)
       return {
         id: decoded.id,
-        name: decoded.firstName || '',
+        name: `${decoded.firstName} ${decoded.lastName}`,
         email: decoded.email,
         role: decoded.role,
         avatar: decoded.avatar || ''
@@ -53,6 +54,21 @@ class GoogleAuthService {
       return null;
     }
   }
+
+  public loadUserFromLocalStorage() {
+    const user = localStorage.getItem('loggedUser');
+    if (user) {
+      loggedUser.value = JSON.parse(user);
+    }
+  }
+
+  public logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('googleToken');
+    localStorage.removeItem('loggedUser');
+    loggedUser.value = null;
+  }
 }
 
-export default GoogleAuthService;
+export default GoogleAuthService.getInstance();

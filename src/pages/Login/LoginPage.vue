@@ -58,13 +58,13 @@ const login = async () => {
 };
 
 const loginWithGoogle = () => {
-  GoogleAuthService.getInstance().loginWithGoogle();
+  GoogleAuthService.loginWithGoogle();
 };
 
 onMounted(async () => {
 
   try {
-    await GoogleAuthService.getInstance().handleGoogleCallback();
+    await GoogleAuthService.handleGoogleCallback();
     router.push('/')
   }
   catch (error){
