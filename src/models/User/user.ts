@@ -8,5 +8,6 @@ export interface User {
     firstName: string;
     lastName: string;
     role: UserRole;
-    passwords: Passwords
+    passwords: Passwords;
+    avatar: string
   }

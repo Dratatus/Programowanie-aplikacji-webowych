@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-
+import GoogleAuthService  from '../../services/auth/google-auth-service';
 const router = useRouter();
 const email = ref('');
 const password = ref('');
@@ -58,22 +58,18 @@ const login = async () => {
 };
 
 const loginWithGoogle = () => {
-  window.location.href = 'http://localhost:3000/api/auth/google';
+  GoogleAuthService.getInstance().loginWithGoogle();
 };
 
-onMounted(() => {
-  const params = new URLSearchParams(window.location.search);
-  const token = params.get('token');
-  const refreshToken = params.get('refreshToken');
-  const googleToken = params.get('googleToken');
-  
-  if (token && refreshToken && googleToken) {
- 
-    localStorage.setItem('token', token);
-    localStorage.setItem('refreshToken', refreshToken);
-    localStorage.setItem('googleToken', googleToken);
-    
-    router.push('/');
+onMounted(async () => {
+
+  try {
+    await GoogleAuthService.getInstance().handleGoogleCallback();
+    router.push('/')
+  }
+  catch (error){
+    console.error('Google error', error)
+    router.replace('/login')
   }
 });
 </script>

@@ -187,12 +187,13 @@ import SelectCurrentStory from './SelectCurrentStory.vue';
 import { Task } from '../models/Task';
 import { ProjectTaskService } from '../services/projectTask-service';
 import { selectedStoryId, tasks } from '../reactive/refs';
-import AuthService from '../services/auth-service'; // Import AuthService
+import AuthService from '../services/auth/auth-service'; 
 
 const isModalOpen = ref(false);
 const isEditing = ref(false);
 const detailedTask = ref<Task>();
-const users = ref(AuthService.getUsers()); // Get users from AuthService
+const users = ref(AuthService.getUsers());
+
 const newTask = ref<Task>({
     id: Date.now(), 
     name: '',

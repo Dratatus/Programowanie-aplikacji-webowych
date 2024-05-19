@@ -2,7 +2,7 @@ import  ProjectManager  from "../components/ProjectManager.vue"
 import { createRouter, createWebHistory } from 'vue-router'
 import ProjectStories from "../components/ProjectStories.vue";
 import ProjectTask from "../components/ProjectTask.vue";
-import LoginPage from "../components/Login/LoginPage.vue";
+import LoginPage from "../pages/Login/LoginPage.vue";
 
 const routes = [
   { path: '/', component: ProjectManager },
