@@ -49,12 +49,13 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import GoogleAuthService  from '../../services/auth/google-auth-service';
+import authService  from '../../services/auth//auth-service';
 const router = useRouter();
 const email = ref('');
 const password = ref('');
 
 const login = async () => {
-
+  authService.login(email.value, password.value)
 };
 
 const loginWithGoogle = () => {

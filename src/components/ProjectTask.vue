@@ -188,11 +188,21 @@ import { Task } from '../models/Task';
 import { ProjectTaskService } from '../services/projectTask-service';
 import { selectedStoryId, tasks } from '../reactive/refs';
 import AuthService from '../services/auth/auth-service'; 
+import { User } from '../models/User/user'; 
 
 const isModalOpen = ref(false);
 const isEditing = ref(false);
 const detailedTask = ref<Task>();
-const users = ref(AuthService.getUsers());
+const users = ref<User[]>([]);
+
+const loadUsers = async () => {
+  try {
+    const response = await AuthService.getUsers();
+    users.value = response;
+  } catch (error) {
+    console.error("Failed to fetch users", error);
+  }
+};
 
 const newTask = ref<Task>({
     id: Date.now(), 
@@ -207,6 +217,7 @@ const newTask = ref<Task>({
 });
 
 onMounted(() => {
+    loadUsers();
     tasks.value = ProjectTaskService.getTasksByStory(selectedStoryId.value as number)
 });
 
