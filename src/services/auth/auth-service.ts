@@ -61,7 +61,7 @@ class AuthService {
   public async getUsers(): Promise<User[]> {
     try {
       const response = await axios.get(`http://localhost:3000/api/auth/users`);
-      const users: User[] = response.data.value;
+      const users: User[] = response.data;
       console.log(users)
       return users;
     } catch (error) {
