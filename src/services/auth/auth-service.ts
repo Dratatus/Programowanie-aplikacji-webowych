@@ -6,7 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 
 class AuthService {
   private static instance: AuthService;
-  private apiURL = import.meta.env.VITE_API_URL;
+  private apiURL = import.meta.env.VITE_API_AUTH_URL;
 
   private constructor() { }
 
@@ -62,7 +62,6 @@ class AuthService {
     try {
       const response = await axios.get(`http://localhost:3000/api/auth/users`);
       const users: User[] = response.data;
-      console.log(users)
       return users;
     } catch (error) {
       throw new Error("Failed to fetch users");

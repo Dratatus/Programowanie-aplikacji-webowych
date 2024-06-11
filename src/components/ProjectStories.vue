@@ -55,7 +55,7 @@
           </form>
         </div>
       </div>
-      
+
       <div class="flex flex-row justify-between space-x-4">
         <div class="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
           <h2 class="text-2xl font-semibold mb-4">ToDo Stories</h2>
@@ -64,6 +64,7 @@
               class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
               <div>
                 <h3 class="text-lg font-semibold text-gray-900">Name: {{ story.name }}</h3>
+                <h3 class="text-lg font-semibold text-gray-900">id: {{ story.id }}</h3>
                 <p class="text-gray-600">Description: {{ story.description }}</p>
                 <p class="text-gray-600">Priority: {{ story.priority }}</p>
                 <p class="text-gray-600">Statte: {{ story.state }}</p>
@@ -148,8 +149,6 @@ import { ProjectStory, Priority, StoryState } from '../models/projectStory';
 import { selectedProjectId } from '../reactive/refs';
 import SelectCurrentProject from '../components/SelectCurrentProject.vue';
 
-
-
 const stories = ref<ProjectStory[]>([]);
 const isModalOpen = ref(false);
 const isEditing = ref(false);
@@ -166,10 +165,10 @@ const newStory = ref<ProjectStory>({
   ownerId: 1,
 });
 
-onMounted(() => {
+onMounted(async () => {
   selectedProjectId.value = CurrentProjectService.getCurrentProjectId();
   if (selectedProjectId.value) {
-    stories.value = ProjectStoryService.loadStoriesForProject(selectedProjectId.value);
+    stories.value = await ProjectStoryService.loadStoriesForCurrentProject();
   }
 });
 
@@ -185,9 +184,9 @@ const doneStories = computed(() =>
   stories.value.filter((story) => story.state === 'done')
 );
 
-watch(selectedProjectId, (newId) => {
+watch(selectedProjectId, async (newId) => {
   if (newId) {
-    stories.value = ProjectStoryService.loadStoriesForProject(newId);
+    stories.value = await ProjectStoryService.loadStoriesForCurrentProject();
   } else {
     stories.value = [];
   }
@@ -205,7 +204,7 @@ const toggleModal = (story: ProjectStory | null = null) => {
   isModalOpen.value = !isModalOpen.value;
 };
 
-const addStory = () => {
+const addStory = async () => {
   if (!selectedProjectId.value) {
     alert("Please select a project first.");
     return;
@@ -231,12 +230,12 @@ const addStory = () => {
 
   ProjectStoryService.createStory(storyToAdd);
 
-  stories.value = ProjectStoryService.loadStoriesForProject(projectId);
+  stories.value = await ProjectStoryService.loadStoriesForCurrentProject();
   toggleModal();
 };
 
 
-const updateStory = () => {
+const updateStory = async () => {
 
   const projectId = selectedProjectId.value!;
   const storyData = newStory.value;
@@ -248,7 +247,7 @@ const updateStory = () => {
     alert("Something went wrong with story update")
   }
 
-  stories.value = ProjectStoryService.loadStoriesForProject(projectId);
+  stories.value = await ProjectStoryService.loadStoriesForCurrentProject();
   toggleModal()
 }
 
@@ -258,9 +257,9 @@ const editStory = (story: ProjectStory) => {
   toggleModal(newStory.value);
 };
 
-const deleteStory = (storyId: number) => {
-  ProjectStoryService.deleteStory(storyId);
-  stories.value = ProjectStoryService.loadStoriesForProject(selectedProjectId.value as number);
+const deleteStory = async (storyId: number) => {
+  await ProjectStoryService.deleteStory(storyId);
+  stories.value = await ProjectStoryService.loadStoriesForCurrentProject();
 };
 </script>
 

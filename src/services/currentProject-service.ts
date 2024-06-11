@@ -1,6 +1,8 @@
+
+import { selectedProjectId } from "../reactive/refs"
+
 class CurrentProjectService {
   private static instance: CurrentProjectService;
-  private currentProjectId: number | null = null;
 
   private constructor() {
     this.loadCurrentProject();
@@ -14,27 +16,27 @@ class CurrentProjectService {
   }
 
   public setCurrentProject(projectId: number): void {
-    this.currentProjectId = projectId;
+    selectedProjectId.value = projectId;
     localStorage.setItem('currentProject', projectId.toString());
   }
 
   public getCurrentProjectId(): number | null {
-    return this.currentProjectId;
+    return selectedProjectId.value;
   }
 
   private loadCurrentProject(): void {
     const projectId = localStorage.getItem('currentProject');
     if (projectId) {
-      this.currentProjectId = parseInt(projectId);
+      selectedProjectId.value = parseInt(projectId);
     }
   }
 
   public clearCurrentProject(): void {
-    this.currentProjectId = null;
+    selectedProjectId.value = null;
     localStorage.removeItem('currentProject');
   }
 
-  
+
 }
 
 export default CurrentProjectService.getInstance();

@@ -53,7 +53,7 @@ const refreshProjectsAndStories = async () => {
         selectedProjectName.value = project ? project.name : 'Select project';
         selectedStoryName.value = story ? story.name : 'Select story';
 
-        stories.value = await ProjectStoryService.loadStoriesForProject(selectedProjectId.value);
+        stories.value = await ProjectStoryService.loadStoriesForCurrentProject();
         await refreshTasks(selectedStoryId.value as number);
     }
 };

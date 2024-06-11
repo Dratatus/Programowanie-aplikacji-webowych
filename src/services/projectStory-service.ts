@@ -1,48 +1,59 @@
+import axios from 'axios';
 import { ProjectStory, StoryState } from '../models/projectStory';
-
+import { selectedProjectId } from '../reactive/refs';
+import CurrentProjectService from '../services/currentProject-service';
 export class ProjectStoryService {
-   static loadStories(): ProjectStory[] {
-    const stories = localStorage.getItem('projectStories');
-    return stories ? JSON.parse(stories) : [];
-  }
+    private static API_URL = `${import.meta.env.VITE_URL}/api/stories`;
 
-  private static saveStories(stories: ProjectStory[]): void {
-    localStorage.setItem('projectStories', JSON.stringify(stories));
-  }
-
-  public static loadStoriesForProject(projectId: number): ProjectStory[] {
-    return this.loadStories().filter(story => story.projectId === projectId);
-  }
-
-  public static createStory(story: ProjectStory): void {
-    const stories = this.loadStories();
-    story.id = new Date().getTime(); 
-    story.creationDate = new Date(); 
-    stories.push(story);
-    this.saveStories(stories);
-  }
-
-  public static updateStory(updatedStory: ProjectStory): void {
-    let stories = this.loadStories();
-    const index = stories.findIndex(story => story.id === updatedStory.id);
-    if (index !== -1) {
-      stories[index] = updatedStory;
-      this.saveStories(stories);
+    static async loadStories(): Promise<ProjectStory[]> {
+        try {
+            const response = await axios.get(this.API_URL);
+            return response.data;
+        } catch (error) {
+            console.error('Error loading stories:', error);
+            return [];
+        }
     }
-  }
 
-  public static deleteStory(storyId: number): void {
-    let stories = this.loadStories();
-    stories = stories.filter(story => story.id !== storyId);
-    this.saveStories(stories);
-  }
-
-  public static updateStoryState(storyId: number, newState: StoryState): void {
-    let stories = this.loadStories();
-    const index = stories.findIndex(story => story.id === storyId);
-    if (index !== -1) {
-      stories[index].state = newState;
-      this.saveStories(stories);
+    static async loadStoriesForCurrentProject(): Promise<ProjectStory[]> {
+        let stories;
+        selectedProjectId.value = CurrentProjectService.getCurrentProjectId();
+        if (selectedProjectId.value) {
+            stories = await ProjectStoryService.loadStories();
+            stories = stories.filter(s => s.projectId === selectedProjectId.value);
+        }
+        return stories as ProjectStory[]
     }
-  }
+
+    static async createStory(story: ProjectStory): Promise<void> {
+        try {
+            await axios.post(this.API_URL, story);
+        } catch (error) {
+            console.error('Error creating story:', error);
+        }
+    }
+
+    static async updateStory(updatedStory: ProjectStory): Promise<void> {
+        try {
+            await axios.put(`${this.API_URL}/${updatedStory.id}`, updatedStory);
+        } catch (error) {
+            console.error('Error updating story:', error);
+        }
+    }
+
+    static async deleteStory(storyId: number): Promise<void> {
+        try {
+            await axios.delete(`${this.API_URL}/${storyId}`);
+        } catch (error) {
+            console.error('Error deleting story:', error);
+        }
+    }
+
+    static async updateStoryState(storyId: string, newState: StoryState): Promise<void> {
+        try {
+            await axios.patch(`${this.API_URL}/${storyId}`, { state: newState });
+        } catch (error) {
+            console.error('Error updating story state:', error);
+        }
+    }
 }

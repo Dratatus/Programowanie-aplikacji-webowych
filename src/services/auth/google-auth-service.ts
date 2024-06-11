@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 
 class GoogleAuthService {
   private static instance: GoogleAuthService;
-  private apiURL = import.meta.env.VITE_API_URL;
+  private apiURL = import.meta.env.VITE_API_AUTH_URL;
 
   private constructor() { }
 
