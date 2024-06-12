@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { selectedStoryId } from '../reactive/refs';
 import { Task } from '../models/Task';
+import currentStoryService from './currentStory-service';
+import { ProjectStoryService } from './projectStory-service';
 
 export class ProjectTaskService {
     private static API_URL = `${import.meta.env.VITE_URL}/api/tasks`;
@@ -16,13 +18,15 @@ export class ProjectTaskService {
     }
 
     static async getTasksByStory(storyId: number): Promise<Task[]> {
-        try {
-            const response = await axios.get(`${this.API_URL}?storyId=${storyId}`);
-            return response.data;
-        } catch (error) {
-            console.error('Error loading tasks for story:', error);
-            return [];
+        let tasks;
+        selectedStoryId.value = currentStoryService.getCurrentStoryId();
+
+        if (selectedStoryId.value) {
+            tasks = await ProjectTaskService.loadTasks();
+            tasks = tasks.filter(t => t.storyId === selectedStoryId.value);
         }
+
+        return tasks as Task[]
     }
 
     static async addTask(task: Task): Promise<void> {
@@ -41,6 +45,9 @@ export class ProjectTaskService {
                 updatedTask.startDate = new Date();
             }
             if (updatedTask.status === 'Done') {
+                if (!updatedTask.startDate) {
+                    updatedTask.startDate = new Date();
+                }
                 updatedTask.endDate = new Date();
             }
             await axios.put(`${this.API_URL}/${updatedTask.id}`, updatedTask);

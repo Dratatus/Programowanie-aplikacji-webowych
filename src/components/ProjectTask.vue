@@ -225,7 +225,6 @@ const newTask = ref<Task>({
 onMounted(async () => {
     await loadUsers();
     tasks.value = await ProjectTaskService.getTasksByStory(selectedStoryId.value as number)
-    const x = tasks.value;
 });
 
 const todoTasks = computed(() =>
@@ -256,13 +255,13 @@ const showDetails = (task: Task) => {
 };
 
 const addTask = async () => {
-    ProjectTaskService.addTask(newTask.value);
+    await ProjectTaskService.addTask(newTask.value);
     tasks.value = await ProjectTaskService.getTasksByStory(selectedStoryId.value as number);
     toggleModal();
 };
 
 const updateTask = async () => {
-    ProjectTaskService.updateTask(newTask.value);
+    await ProjectTaskService.updateTask(newTask.value);
     tasks.value = await ProjectTaskService.getTasksByStory(selectedStoryId.value as number);
     toggleModal();
 };

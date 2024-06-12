@@ -64,7 +64,6 @@
               class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
               <div>
                 <h3 class="text-lg font-semibold text-gray-900">Name: {{ story.name }}</h3>
-                <h3 class="text-lg font-semibold text-gray-900">id: {{ story.id }}</h3>
                 <p class="text-gray-600">Description: {{ story.description }}</p>
                 <p class="text-gray-600">Priority: {{ story.priority }}</p>
                 <p class="text-gray-600">Statte: {{ story.state }}</p>
@@ -228,7 +227,7 @@ const addStory = async () => {
     creationDate: new Date(),
   };
 
-  ProjectStoryService.createStory(storyToAdd);
+  await ProjectStoryService.createStory(storyToAdd);
 
   stories.value = await ProjectStoryService.loadStoriesForCurrentProject();
   toggleModal();
@@ -241,7 +240,7 @@ const updateStory = async () => {
   const storyData = newStory.value;
 
   if (isEditing.value && editableStory.value && editableStory.value.id) {
-    ProjectStoryService.updateStory({ ...editableStory.value, ...storyData, projectId: projectId });
+    await ProjectStoryService.updateStory({ ...editableStory.value, ...storyData, projectId: projectId });
   }
   else {
     alert("Something went wrong with story update")
