@@ -5,7 +5,7 @@
 
             <SelectCurrentProject />
             <SelectCurrentStory />
-            
+
             <div class="flex justify-end mb-6">
                 <button @click="toggleModal"
                     class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
@@ -25,7 +25,8 @@
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                             </div>
                             <div>
-                                <label for="task-description" class="block text-sm font-medium text-gray-700">Description</label>
+                                <label for="task-description"
+                                    class="block text-sm font-medium text-gray-700">Description</label>
                                 <textarea id="task-description" v-model="newTask.description" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
                             </div>
@@ -50,7 +51,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="assigned-user" class="block text-sm font-medium text-gray-700">Assigned User</label>
+                                <label for="assigned-user" class="block text-sm font-medium text-gray-700">Assigned
+                                    User</label>
                                 <select id="assigned-user" v-model="newTask.assignedUserId"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                     <option value="" disabled>Select user</option>
@@ -81,7 +83,8 @@
                         <h4 class="text-lg font-semibold">Name: {{ detailedTask.name }}</h4>
                         <p>Description: {{ detailedTask.description }}</p>
                         <p>Priority: {{ detailedTask.priority }}</p>
-                        <p v-if="detailedTask.assignedUserId">Assigned to: {{ getUserName(detailedTask.assignedUserId) }}</p>
+                        <p v-if="detailedTask.assignedUserId">Assigned to: {{ getUserName(detailedTask.assignedUserId) }}
+                        </p>
                         <p>Estimated Hours: {{ detailedTask.estimatedTime }}</p>
                         <p v-if="detailedTask.startDate">Start Date: {{ formatDate(detailedTask.startDate) }}</p>
                         <p v-if="detailedTask.endDate">End Date: {{ formatDate(detailedTask.endDate) }}</p>
@@ -99,7 +102,8 @@
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">{{ task.name }}</h3>
                                 <p class="text-gray-600">Priority: {{ task.priority }}</p>
-                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ getUserName(task.assignedUserId) }}</p>
+                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{
+                                    getUserName(task.assignedUserId) }}</p>
                                 <p class="text-gray-600">Estimated Hours: {{ task.estimatedTime }}</p>
                             </div>
                             <div class="flex flex-col items-center justify-between">
@@ -126,7 +130,8 @@
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">{{ task.name }}</h3>
                                 <p class="text-gray-600">Priority: {{ task.priority }}</p>
-                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ getUserName(task.assignedUserId) }}</p>
+                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{
+                                    getUserName(task.assignedUserId) }}</p>
                                 <p class="text-gray-600">Estimated Hours: {{ task.estimatedTime }}</p>
                                 <p v-if="task.startDate">Start Date: {{ formatDate(task.startDate) }}</p>
                             </div>
@@ -154,7 +159,8 @@
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">{{ task.name }}</h3>
                                 <p class="text-gray-600">Priority: {{ task.priority }}</p>
-                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{ getUserName(task.assignedUserId) }}</p>
+                                <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{
+                                    getUserName(task.assignedUserId) }}</p>
                                 <p class="text-gray-600">Estimated Hours: {{ task.estimatedTime }}</p>
                                 <p v-if="task.startDate">Start Date: {{ formatDate(task.startDate) }}</p>
                                 <p v-if="task.endDate">End Date: {{ formatDate(task.endDate) }}</p>
@@ -187,8 +193,8 @@ import SelectCurrentStory from './SelectCurrentStory.vue';
 import { Task } from '../models/Task';
 import { ProjectTaskService } from '../services/projectTask-service';
 import { selectedStoryId, tasks } from '../reactive/refs';
-import AuthService from '../services/auth/auth-service'; 
-import { User } from '../models/User/user'; 
+import AuthService from '../services/auth/auth-service';
+import { User } from '../models/User/user';
 
 const isModalOpen = ref(false);
 const isEditing = ref(false);
@@ -196,29 +202,30 @@ const detailedTask = ref<Task>();
 const users = ref<User[]>([]);
 
 const loadUsers = async () => {
-  try {
-    const response = await AuthService.getUsers();
-    users.value = response;
-  } catch (error) {
-    console.error("Failed to fetch users", error);
-  }
+    try {
+        const response = await AuthService.getUsers();
+        users.value = response;
+    } catch (error) {
+        console.error("Failed to fetch users", error);
+    }
 };
 
 const newTask = ref<Task>({
-    id: Date.now(), 
+    id: Date.now(),
     name: '',
     description: '',
     priority: 'Medium',
-    storyId: 0, 
+    storyId: 0,
     estimatedTime: 0,
     status: 'Todo',
     creationDate: new Date(),
     assignedUserId: undefined,
 });
 
-onMounted(() => {
-    loadUsers();
-    tasks.value = ProjectTaskService.getTasksByStory(selectedStoryId.value as number)
+onMounted(async () => {
+    await loadUsers();
+    tasks.value = await ProjectTaskService.getTasksByStory(selectedStoryId.value as number)
+    const x = tasks.value;
 });
 
 const todoTasks = computed(() =>
@@ -248,15 +255,15 @@ const showDetails = (task: Task) => {
     detailedTask.value = task;
 };
 
-const addTask = () => {
+const addTask = async () => {
     ProjectTaskService.addTask(newTask.value);
-    tasks.value = ProjectTaskService.getTasksByStory(selectedStoryId.value as number); 
+    tasks.value = await ProjectTaskService.getTasksByStory(selectedStoryId.value as number);
     toggleModal();
 };
 
-const updateTask = () => {
+const updateTask = async () => {
     ProjectTaskService.updateTask(newTask.value);
-    tasks.value = ProjectTaskService.getTasksByStory(selectedStoryId.value as number); 
+    tasks.value = await ProjectTaskService.getTasksByStory(selectedStoryId.value as number);
     toggleModal();
 };
 
@@ -266,9 +273,9 @@ const editTask = (task: Task) => {
     toggleModal();
 };
 
-const deleteTask = (taskId: number) => {
-    ProjectTaskService.deleteTask(taskId);
-    tasks.value = ProjectTaskService.getTasksByStory(selectedStoryId.value as number);
+const deleteTask = async (taskId: number) => {
+    await ProjectTaskService.deleteTask(taskId);
+    tasks.value = await ProjectTaskService.getTasksByStory(selectedStoryId.value as number);
 };
 
 const resetForm = () => {

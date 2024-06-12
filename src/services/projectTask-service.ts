@@ -1,47 +1,59 @@
-import { Task } from "../models/Task";
-import { selectedStoryId } from "../reactive/refs";
-
+import axios from 'axios';
+import { selectedStoryId } from '../reactive/refs';
+import { Task } from '../models/Task';
 
 export class ProjectTaskService {
-    static loadTasks(): Task[] {
-        const tasks = localStorage.getItem('tasks');
-        return tasks ? JSON.parse(tasks) : [];
-    }
+    private static API_URL = `${import.meta.env.VITE_URL}/api/tasks`;
 
-    static saveTasks(tasks: Task[]): void {
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-    }
-
-    static addTask(task: Task): void {
-        const tasks = this.loadTasks();
-        task.id = new Date().getTime(); 
-        task.storyId = selectedStoryId.value as number
-        task.creationDate = new Date();
-        tasks.push(task);
-        this.saveTasks(tasks);
-    }
-
-    static updateTask(updatedTask: Task): void {
-        let tasks = this.loadTasks();
-        const index = tasks.findIndex((task) => task.id === updatedTask.id);
-        if (index !== -1) {
-            tasks[index] = { ...tasks[index], ...updatedTask };
-            if (updatedTask.status === 'Doing') {
-                tasks[index].startDate = new Date();
-            }
-            if (updatedTask.status === 'Done') {
-                tasks[index].endDate = new Date();
-            }
-            this.saveTasks(tasks);
+    static async loadTasks(): Promise<Task[]> {
+        try {
+            const response = await axios.get(this.API_URL);
+            return response.data;
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+            return [];
         }
     }
 
-    static deleteTask(taskId: number): void {
-        const tasks = this.loadTasks().filter((task) => task.id !== taskId);
-        this.saveTasks(tasks);
+    static async getTasksByStory(storyId: number): Promise<Task[]> {
+        try {
+            const response = await axios.get(`${this.API_URL}?storyId=${storyId}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error loading tasks for story:', error);
+            return [];
+        }
     }
 
-    static getTasksByStory(storyId: number): Task[] {
-        return this.loadTasks().filter((task) => task.storyId === storyId);
+    static async addTask(task: Task): Promise<void> {
+        try {
+            task.storyId = selectedStoryId.value as number;
+            task.creationDate = new Date();
+            await axios.post(this.API_URL, task);
+        } catch (error) {
+            console.error('Error adding task:', error);
+        }
+    }
+
+    static async updateTask(updatedTask: Task): Promise<void> {
+        try {
+            if (updatedTask.status === 'Doing') {
+                updatedTask.startDate = new Date();
+            }
+            if (updatedTask.status === 'Done') {
+                updatedTask.endDate = new Date();
+            }
+            await axios.put(`${this.API_URL}/${updatedTask.id}`, updatedTask);
+        } catch (error) {
+            console.error('Error updating task:', error);
+        }
+    }
+
+    static async deleteTask(taskId: number): Promise<void> {
+        try {
+            await axios.delete(`${this.API_URL}/${taskId}`);
+        } catch (error) {
+            console.error('Error deleting task:', error);
+        }
     }
 }
