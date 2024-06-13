@@ -2,7 +2,6 @@ import axios from 'axios';
 import { selectedStoryId } from '../reactive/refs';
 import { Task } from '../models/Task';
 import currentStoryService from './currentStory-service';
-import { ProjectStoryService } from './projectStory-service';
 
 export class ProjectTaskService {
     private static API_URL = `${import.meta.env.VITE_URL}/api/tasks`;
@@ -17,7 +16,7 @@ export class ProjectTaskService {
         }
     }
 
-    static async getTasksByStory(storyId: number): Promise<Task[]> {
+    static async getTasksByStory(): Promise<Task[]> {
         let tasks;
         selectedStoryId.value = currentStoryService.getCurrentStoryId();
 

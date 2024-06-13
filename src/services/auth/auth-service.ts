@@ -6,7 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 
 class AuthService {
   private static instance: AuthService;
-  private apiURL = import.meta.env.VITE_API_AUTH_URL;
+  private apiURL = import.meta.env.VITE_URL;
 
   private constructor() { }
 
@@ -19,12 +19,20 @@ class AuthService {
 
   public async login(email: string, password: string): Promise<{ token: string, refreshToken: string }> {
     try {
-      const response = await axios.post("http://localhost:3000/api/auth/login", { email, password });
+      const response = await axios.post(`${this.apiURL}/api/login`, { email, password });
       const { token, refreshToken } = response.data;
       loggedUser.value = this.decodeToken(token);
       return { token, refreshToken };
     } catch (error) {
       throw new Error("Invalid email or password");
+    }
+  }
+
+  public async register(userData: { firstName: string; lastName: string; email: string; password: string }): Promise<void> {
+    try {
+      await axios.post(`${this.apiURL}/api/register`, userData);
+    } catch (error) {
+      throw new Error("Registration failed");
     }
   }
 
@@ -60,7 +68,7 @@ class AuthService {
 
   public async getUsers(): Promise<User[]> {
     try {
-      const response = await axios.get(`http://localhost:3000/api/auth/users`);
+      const response = await axios.get(`${this.apiURL}/api/auth/users`);
       const users: User[] = response.data;
       return users;
     } catch (error) {

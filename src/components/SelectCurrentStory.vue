@@ -42,6 +42,18 @@ const stories = ref<ProjectStory[]>([]);
 const selectedProjectName = ref('Select project');
 const selectedStoryName = ref('Select story');
 
+onMounted(async () => {
+    const savedProjectId = localStorage.getItem('selectedProjectId');
+    const savedStoryId = localStorage.getItem('selectedStoryId');
+    if (savedProjectId) {
+        selectedProjectId.value = Number(savedProjectId);
+    }
+    if (savedStoryId) {
+        selectedStoryId.value = Number(savedStoryId);
+    }
+    await refreshProjectsAndStories();
+});
+
 const refreshProjectsAndStories = async () => {
     projects.value = await ProjectService.loadProjects();
     stories.value = await ProjectStoryService.loadStories();
@@ -54,25 +66,29 @@ const refreshProjectsAndStories = async () => {
         selectedStoryName.value = story ? story.name : 'Select story';
 
         stories.value = await ProjectStoryService.loadStoriesForCurrentProject();
-        await refreshTasks(selectedStoryId.value as number);
+
+        const firstStory = stories.value.find(s => s.projectId === selectedProjectId.value);
+
+        if (firstStory) {
+            selectedStoryId.value = firstStory.id;
+            selectedStoryName.value = firstStory.name;
+            await refreshTasks();
+        } else {
+            selectedStoryName.value = 'Select story';
+            tasks.value = [];
+        }
+    } else {
+        selectedProjectName.value = 'Select project';
+        selectedStoryName.value = 'Select story';
+        tasks.value = [];
     }
+    await refreshTasks();
 };
 
-const refreshTasks = async (storyId: number) => {
-    tasks.value = await ProjectTaskService.getTasksByStory(storyId);
+const refreshTasks = async () => {
+    tasks.value = await ProjectTaskService.getTasksByStory();
 };
 
-onMounted(() => {
-    const savedProjectId = localStorage.getItem('selectedProjectId');
-    const savedStoryId = localStorage.getItem('selectedStoryId');
-    if (savedProjectId) {
-        selectedProjectId.value = Number(savedProjectId);
-    }
-    if (savedStoryId) {
-        selectedStoryId.value = Number(savedStoryId);
-    }
-    refreshProjectsAndStories();
-});
 
 watch(selectedProjectId, (newVal) => {
     if (newVal) {
@@ -84,13 +100,13 @@ watch(selectedProjectId, (newVal) => {
     }
 });
 
-watch(selectedStoryId, (newVal) => {
+watch(selectedStoryId, async (newVal) => {
     if (newVal) {
         localStorage.setItem('selectedStoryId', newVal.toString());
         CurrentStoryService.setCurrentStory(newVal);
         const story = stories.value.find(s => s.id === newVal);
         selectedStoryName.value = story ? story.name : 'Select story';
-        refreshTasks(newVal);
+        await refreshTasks();
     } else {
         selectedStoryName.value = 'Select story';
         tasks.value = [];
@@ -102,7 +118,7 @@ const setCurrentStory = async () => {
         CurrentStoryService.setCurrentStory(selectedStoryId.value);
         const story = stories.value.find(s => s.id === selectedStoryId.value);
         selectedStoryName.value = story ? story.name : 'Select story';
-        await refreshTasks(selectedStoryId.value);
+        await refreshTasks();
     } else {
         selectedStoryName.value = 'Select story';
         localStorage.removeItem('selectedStoryId');

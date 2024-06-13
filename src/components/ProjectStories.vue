@@ -119,7 +119,7 @@
                 <p class="text-gray-600">Description: {{ story.description }}</p>
                 <p class="text-gray-600">Priority: {{ story.priority }}</p>
                 <p class="text-gray-600">Statte: {{ story.state }}</p>
-                <p class="text-gray-600">Created: {{ story.creationDate }}</p>
+                <p class="text-gray-600">Created: {{ formatDate(story.creationDate) }}</p>
               </div>
               <div>
                 <button @click="editStory(story)"
@@ -145,8 +145,9 @@ import { ref, onMounted, computed, watch } from 'vue';
 import CurrentProjectService from '../services/currentProject-service';
 import { ProjectStoryService } from '../services/projectStory-service';
 import { ProjectStory, Priority, StoryState } from '../models/projectStory';
-import { selectedProjectId } from '../reactive/refs';
+import { loggedUser, selectedProjectId } from '../reactive/refs';
 import SelectCurrentProject from '../components/SelectCurrentProject.vue';
+import { format } from 'date-fns/format';
 
 const stories = ref<ProjectStory[]>([]);
 const isModalOpen = ref(false);
@@ -161,7 +162,7 @@ const newStory = ref<ProjectStory>({
   projectId: selectedProjectId.value as number,
   creationDate: new Date(),
   state: '' as StoryState,
-  ownerId: 1,
+  ownerId: loggedUser.value?.id as number,
 });
 
 onMounted(async () => {
@@ -223,13 +224,24 @@ const addStory = async () => {
     projectId: projectId,
     priority: storyData.priority || 'medium',
     state: storyData.state || 'todo',
-    ownerId: 1,
+    ownerId: loggedUser.value?.id as number,
     creationDate: new Date(),
   };
 
   await ProjectStoryService.createStory(storyToAdd);
 
   stories.value = await ProjectStoryService.loadStoriesForCurrentProject();
+
+  newStory.value = {
+    id: Date.now(),
+    name: '',
+    description: '',
+    priority: '' as Priority,
+    projectId: selectedProjectId.value as number,
+    creationDate: new Date(),
+    state: '' as StoryState,
+    ownerId: loggedUser.value?.id as number,
+  };
   toggleModal();
 };
 
@@ -259,6 +271,14 @@ const editStory = (story: ProjectStory) => {
 const deleteStory = async (storyId: number) => {
   await ProjectStoryService.deleteStory(storyId);
   stories.value = await ProjectStoryService.loadStoriesForCurrentProject();
+};
+
+const formatDate = (date: Date) => {
+    if (typeof date === 'string') {
+        return format(new Date(date), 'yyyy-MM-dd');
+    } else {
+        return format(date, 'yyyy-MM-dd');
+    }
 };
 </script>
 

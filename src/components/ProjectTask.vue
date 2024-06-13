@@ -56,6 +56,7 @@
                                 <select id="assigned-user" v-model="newTask.assignedUserId"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                     <option value="" disabled>Select user</option>
+                                    <option :value="null">None</option>
                                     <option v-for="user in filteredUsers" :key="user.id" :value="user.id">
                                         {{ user.firstName }} {{ user.lastName }}
                                     </option>
@@ -190,9 +191,9 @@ import { ref, onMounted, computed } from 'vue';
 import { format } from 'date-fns';
 import SelectCurrentProject from './SelectCurrentProject.vue';
 import SelectCurrentStory from './SelectCurrentStory.vue';
-import { Task } from '../models/Task';
+import { Task, TaskPriority, TaskStatus } from '../models/Task';
 import { ProjectTaskService } from '../services/projectTask-service';
-import { selectedStoryId, tasks } from '../reactive/refs';
+import { tasks } from '../reactive/refs';
 import AuthService from '../services/auth/auth-service';
 import { User } from '../models/User/user';
 
@@ -214,17 +215,17 @@ const newTask = ref<Task>({
     id: Date.now(),
     name: '',
     description: '',
-    priority: 'Medium',
+    priority: '' as TaskPriority,
     storyId: 0,
     estimatedTime: 0,
-    status: 'Todo',
+    status: '' as TaskStatus,
     creationDate: new Date(),
     assignedUserId: undefined,
 });
 
 onMounted(async () => {
     await loadUsers();
-    tasks.value = await ProjectTaskService.getTasksByStory(selectedStoryId.value as number)
+    tasks.value = await ProjectTaskService.getTasksByStory()
 });
 
 const todoTasks = computed(() =>
@@ -255,14 +256,20 @@ const showDetails = (task: Task) => {
 };
 
 const addTask = async () => {
+    if (newTask.value.assignedUserId && newTask.value.status !== 'Done') {
+        newTask.value.status = 'Doing'
+    }
     await ProjectTaskService.addTask(newTask.value);
-    tasks.value = await ProjectTaskService.getTasksByStory(selectedStoryId.value as number);
+    tasks.value = await ProjectTaskService.getTasksByStory();
     toggleModal();
 };
 
 const updateTask = async () => {
+    if (newTask.value.assignedUserId && newTask.value.status !== 'Done') {
+        newTask.value.status = 'Doing'
+    }
     await ProjectTaskService.updateTask(newTask.value);
-    tasks.value = await ProjectTaskService.getTasksByStory(selectedStoryId.value as number);
+    tasks.value = await ProjectTaskService.getTasksByStory();
     toggleModal();
 };
 
@@ -274,7 +281,7 @@ const editTask = (task: Task) => {
 
 const deleteTask = async (taskId: number) => {
     await ProjectTaskService.deleteTask(taskId);
-    tasks.value = await ProjectTaskService.getTasksByStory(selectedStoryId.value as number);
+    tasks.value = await ProjectTaskService.getTasksByStory();
 };
 
 const resetForm = () => {
@@ -282,10 +289,10 @@ const resetForm = () => {
         id: Date.now(),
         name: '',
         description: '',
-        priority: 'Medium',
+        priority: '' as TaskPriority,
         storyId: 0,
         estimatedTime: 0,
-        status: 'Todo',
+        status: '' as TaskStatus,
         creationDate: new Date(),
         assignedUserId: undefined,
     };
@@ -304,4 +311,6 @@ const formatDate = (date: Date) => {
         return format(date, 'yyyy-MM-dd');
     }
 };
+
+
 </script>
