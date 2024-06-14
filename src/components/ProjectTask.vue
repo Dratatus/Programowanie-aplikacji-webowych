@@ -105,7 +105,6 @@
                                 <p class="text-gray-600">Priority: {{ task.priority }}</p>
                                 <p v-if="task.assignedUserId" class="text-gray-600">Assigned to: {{
                                     getUserName(task.assignedUserId) }}</p>
-                                <p class="text-gray-600">Estimated Hours: {{ task.estimatedTime }}</p>
                             </div>
                             <div class="flex flex-col items-center justify-between">
                                 <div class="flex mb-2">
