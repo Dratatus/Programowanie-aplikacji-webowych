@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-100 py-10">
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-900 py-10">
     <div class="container mx-auto max-w-7xl">
-      <h1 class="text-4xl font-bold text-center text-gray-800 mb-10">Project Stories</h1>
+      <h1 class="text-4xl font-bold text-center text-gray-800 dark:text-gray-100 mb-10">Project Stories</h1>
 
       <SelectCurrentProject />
 
@@ -12,25 +12,27 @@
         </button>
       </div>
 
-
       <div v-if="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-        <div class="bg-white p-8 rounded-lg">
-          <h3 class="text-xl font-bold mb-4">Add New Story</h3>
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-lg">
+          <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Add New Story</h3>
           <form @submit.prevent="isEditing ? updateStory() : addStory()">
             <div class="mb-4">
-              <label for="story-name" class="block text-sm font-medium text-gray-700">Story Name</label>
+              <label for="story-name" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Story
+                Name</label>
               <input type="text" id="story-name" v-model="newStory.name"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm">
             </div>
             <div class="mb-4">
-              <label for="story-description" class="block text-sm font-medium text-gray-700">Description</label>
+              <label for="story-description"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-200">Description</label>
               <textarea id="story-description" v-model="newStory.description"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm"></textarea>
             </div>
             <div class="mb-4">
-              <label for="story-priority" class="block text-sm font-medium text-gray-700">Priority</label>
+              <label for="story-priority"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-200">Priority</label>
               <select id="story-priority" v-model="newStory.priority"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm">
                 <option value="" disabled>Select priority</option>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -38,9 +40,9 @@
               </select>
             </div>
             <div class="mb-4">
-              <label for="story-state" class="block text-sm font-medium text-gray-700">State</label>
+              <label for="story-state" class="block text-sm font-medium text-gray-700 dark:text-gray-200">State</label>
               <select id="story-state" v-model="newStory.state"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm">
                 <option value="" disabled>Select state</option>
                 <option value="todo">To Do</option>
                 <option value="doing">Doing</option>
@@ -56,17 +58,18 @@
         </div>
       </div>
 
+
       <div class="flex flex-row justify-between space-x-4">
-        <div class="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
-          <h2 class="text-2xl font-semibold mb-4">ToDo Stories</h2>
+        <div class="w-full lg:w-1/3 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">ToDo Stories</h2>
           <ul class="space-y-3">
             <li v-for="story in todoStories" :key="story.id"
-              class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
+              class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
               <div>
-                <h3 class="text-lg font-semibold text-gray-900">Name: {{ story.name }}</h3>
-                <p class="text-gray-600">Description: {{ story.description }}</p>
-                <p class="text-gray-600">Priority: {{ story.priority }}</p>
-                <p class="text-gray-600">Statte: {{ story.state }}</p>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Name: {{ story.name }}</h3>
+                <p class="text-gray-600 dark:text-gray-400">Description: {{ story.description }}</p>
+                <p class="text-gray-600 dark:text-gray-400">Priority: {{ story.priority }}</p>
+                <p class="text-gray-600 dark:text-gray-400">State: {{ story.state }}</p>
               </div>
               <div>
                 <button @click="editStory(story)"
@@ -79,20 +82,21 @@
                 </button>
               </div>
             </li>
-            <li v-if="todoStories.length === 0" class="text-center text-gray-500">No stories found.</li>
+            <li v-if="todoStories.length === 0" class="text-center text-gray-500 dark:text-gray-400">No stories found.
+            </li>
           </ul>
         </div>
 
-        <div class="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
-          <h2 class="text-2xl font-semibold mb-4">During Stories</h2>
+        <div class="w-full lg:w-1/3 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">During Stories</h2>
           <ul class="space-y-3">
             <li v-for="story in doingStories" :key="story.id"
-              class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
+              class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
               <div>
-                <h3 class="text-lg font-semibold text-gray-900">Name: {{ story.name }}</h3>
-                <p class="text-gray-600">Description: {{ story.description }}</p>
-                <p class="text-gray-600">Priority: {{ story.priority }}</p>
-                <p class="text-gray-600">Statte: {{ story.state }}</p>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Name: {{ story.name }}</h3>
+                <p class="text-gray-600 dark:text-gray-400">Description: {{ story.description }}</p>
+                <p class="text-gray-600 dark:text-gray-400">Priority: {{ story.priority }}</p>
+                <p class="text-gray-600 dark:text-gray-400">State: {{ story.state }}</p>
               </div>
               <div>
                 <button @click="editStory(story)"
@@ -105,21 +109,22 @@
                 </button>
               </div>
             </li>
-            <li v-if="doingStories.length === 0" class="text-center text-gray-500">No stories found.</li>
+            <li v-if="doingStories.length === 0" class="text-center text-gray-500 dark:text-gray-400">No stories found.
+            </li>
           </ul>
         </div>
 
-        <div class="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
-          <h2 class="text-2xl font-semibold mb-4">Done Stories</h2>
+        <div class="w-full lg:w-1/3 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Done Stories</h2>
           <ul class="space-y-3">
             <li v-for="story in doneStories" :key="story.id"
-              class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
+              class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
               <div>
-                <h3 class="text-lg font-semibold text-gray-900">Name: {{ story.name }}</h3>
-                <p class="text-gray-600">Description: {{ story.description }}</p>
-                <p class="text-gray-600">Priority: {{ story.priority }}</p>
-                <p class="text-gray-600">Statte: {{ story.state }}</p>
-                <p class="text-gray-600">Created: {{ formatDate(story.creationDate) }}</p>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Name: {{ story.name }}</h3>
+                <p class="text-gray-600 dark:text-gray-400">Description: {{ story.description }}</p>
+                <p class="text-gray-600 dark:text-gray-400">Priority: {{ story.priority }}</p>
+                <p class="text-gray-600 dark:text-gray-400">State: {{ story.state }}</p>
+                <p class="text-gray-600 dark:text-gray-400">Created: {{ formatDate(story.creationDate) }}</p>
               </div>
               <div>
                 <button @click="editStory(story)"
@@ -132,14 +137,15 @@
                 </button>
               </div>
             </li>
-            <li v-if="doneStories.length === 0" class="text-center text-gray-500">No stories found.</li>
+            <li v-if="doneStories.length === 0" class="text-center text-gray-500 dark:text-gray-400">No stories found.
+            </li>
           </ul>
         </div>
       </div>
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
 import CurrentProjectService from '../services/currentProject-service';
@@ -274,11 +280,11 @@ const deleteStory = async (storyId: number) => {
 };
 
 const formatDate = (date: Date) => {
-    if (typeof date === 'string') {
-        return format(new Date(date), 'yyyy-MM-dd');
-    } else {
-        return format(date, 'yyyy-MM-dd');
-    }
+  if (typeof date === 'string') {
+    return format(new Date(date), 'yyyy-MM-dd');
+  } else {
+    return format(date, 'yyyy-MM-dd');
+  }
 };
 </script>
 

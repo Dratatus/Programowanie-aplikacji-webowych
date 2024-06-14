@@ -1,12 +1,12 @@
 <template>
     <div class="w-full max-w-xs">
-        <label for="listbox" class="block text-sm font-medium leading-6 text-gray-900">Select a Story</label>
+        <label for="listbox" class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200">Select a Story</label>
         <div class="relative mt-1">
             <button type="button"
-                class="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                <span class="block truncate">{{ selectedStoryName }}</span>
+                class="relative w-full cursor-default rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 sm:text-sm">
+                <span class="block truncate text-gray-900 dark:text-gray-100">{{ selectedStoryName }}</span>
                 <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none"
+                    <svg class="h-5 w-5 text-gray-400 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none"
                         stroke="currentColor">
                         <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" />
                     </svg>
@@ -14,15 +14,16 @@
             </button>
 
             <select v-model="selectedStoryId" @change="setCurrentStory"
-                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                <option value="" disabled>Select story</option>
-                <option v-for="story in stories" :key="story.id" :value="story.id">
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                <option value="" disabled class="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">Select story</option>
+                <option v-for="story in stories" :key="story.id" :value="story.id" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                     {{ story.name }}
                 </option>
             </select>
         </div>
     </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
