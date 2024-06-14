@@ -1,13 +1,21 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { loggedUser } from './reactive/refs';
 import GoogleAuthService from './services/auth/google-auth-service';
 
+const route = useRoute();
+const router = useRouter();
 const user = computed(() => loggedUser.value);
+
 const logout = () => {
   GoogleAuthService.logout();
+  router.push('/login');
 };
 
+const isActive = (path: string) => {
+  return route.path === path;
+};
 </script>
 
 <style scoped></style>
@@ -26,14 +34,22 @@ const logout = () => {
             </div>
             <div class="hidden sm:block sm:ml-6">
               <div class="flex space-x-4">
-                <router-link to="/" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                  aria-current="page">Project Manager</router-link>
-                <router-link to="/stories"
-                  class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Project
-                  Stories</router-link>
-                <router-link to="/tasks"
-                  class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Project
-                  Tasks</router-link>
+                <router-link
+                  to="/"
+                  :class="{'bg-gray-900 text-white': isActive('/'), 'text-gray-300 hover:bg-gray-700 hover:text-white': !isActive('/')}"
+                  class="px-3 py-2 rounded-md text-sm font-medium"
+                  aria-current="page"
+                >Project Manager</router-link>
+                <router-link
+                  to="/stories"
+                  :class="{'bg-gray-900 text-white': isActive('/stories'), 'text-gray-300 hover:bg-gray-700 hover:text-white': !isActive('/stories')}"
+                  class="px-3 py-2 rounded-md text-sm font-medium"
+                >Project Stories</router-link>
+                <router-link
+                  to="/tasks"
+                  :class="{'bg-gray-900 text-white': isActive('/tasks'), 'text-gray-300 hover:bg-gray-700 hover:text-white': !isActive('/tasks')}"
+                  class="px-3 py-2 rounded-md text-sm font-medium"
+                >Project Tasks</router-link>
               </div>
             </div>
           </div>
@@ -43,11 +59,13 @@ const logout = () => {
               <template v-if="!user">
                 <router-link to="/login"
                   class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</router-link>
+                <router-link to="/register"
+                  class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</router-link>
               </template>
               <template v-if="user">
                 <img :src="user.avatar" alt="User Avatar" class="h-8 w-8 rounded-full">
-              <span class="text-gray-300 px-3 py-2 rounded-md text-sm font-medium">{{ user.name }}</span>
-              <button @click="logout" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Logout</button>
+                <span class="text-gray-300 px-3 py-2 rounded-md text-sm font-medium">{{ user.name }}</span>
+                <button @click="logout" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Logout</button>
               </template>
             </div>
           </div>
@@ -60,5 +78,7 @@ const logout = () => {
           <router-view />
         </div>
       </div>
-  </main>
-</div></template>
+    </main>
+  </div>
+</template>
+
