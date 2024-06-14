@@ -21,7 +21,11 @@ class AuthService {
     try {
       const response = await axios.post(`${this.apiURL}/api/login`, { email, password });
       const { token, refreshToken } = response.data;
-      loggedUser.value = this.decodeToken(token);
+      
+      const user = this.decodeToken(token);
+      loggedUser.value = user;
+      localStorage.setItem('loggedUser', JSON.stringify(user));
+      
       return { token, refreshToken };
     } catch (error) {
       throw new Error("Invalid email or password");
