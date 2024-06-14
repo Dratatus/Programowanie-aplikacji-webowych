@@ -55,7 +55,12 @@ const email = ref('');
 const password = ref('');
 
 const login = async () => {
-  authService.login(email.value, password.value)
+  try {
+    await authService.login(email.value, password.value);
+    router.push('/');
+  } catch (error) {
+    console.error('Login error', error);
+  }
 };
 
 const loginWithGoogle = () => {
